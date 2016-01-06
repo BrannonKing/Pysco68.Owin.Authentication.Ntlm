@@ -65,7 +65,7 @@ namespace Pysco68.Owin.Authentication.Ntlm
                     {
                         // send the type 2 message
                         var authorization = Convert.ToBase64String(token);
-                        Response.Headers.Add("WWW-Authenticate", new[] {string.Concat("NTLM ", authorization)});
+                        Response.Headers.Add("WWW-Authenticate", new[] { string.Concat("NTLM ", authorization) });
                         Response.StatusCode = 401;
 
                         // not sucessfull
@@ -84,7 +84,7 @@ namespace Pysco68.Owin.Authentication.Ntlm
                         {
                             // If the name is something like DOMAIN\username then
                             // grab the name part (and what if it looks like username@domain?)
-                            var parts = state.WindowsIdentity.Name.Split(new[] {'\\'}, 2);
+                            var parts = state.WindowsIdentity.Name.Split(new[] { '\\' }, 2);
                             string shortName = parts.Length == 1 ? parts[0] : parts[parts.Length - 1];
 
                             // we need to create a new identity using the sign in type that 
@@ -196,7 +196,10 @@ namespace Pysco68.Owin.Authentication.Ntlm
         {
             // step 1, calculate MD5 hash from input
             byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = _md5.ComputeHash(inputBytes);
+
+            byte[] hash;
+            lock (_md5)
+                hash = _md5.ComputeHash(inputBytes);
 
             // step 2, convert byte array to hex string
             var sb = new StringBuilder(hash.Length * 2);
